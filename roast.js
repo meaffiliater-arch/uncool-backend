@@ -6,6 +6,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 🔴 IMPORTANT: LOG EVERY REQUEST
+app.use((req, res, next) => {
+  console.log("➡️ Incoming:", req.method, req.url);
+  next();
+});
+
+// ✅ HEALTH CHECK (REQUIRED BY RAILWAY)
+app.get("/", (req, res) => {
+  res.status(200).send("OK");
+});
+
 function withTimeout(promise, ms) {
   return Promise.race([
     promise,
@@ -19,7 +30,7 @@ app.post("/roast", async (req, res) => {
   try {
     const { message, history } = req.body;
 
-    if (!message || typeof message !== "string") {
+    if (!message) {
       return res.status(400).json({ error: "Message missing" });
     }
 
@@ -48,7 +59,7 @@ app.post("/roast", async (req, res) => {
         temperature: 0.8,
         max_tokens: 80,
       }),
-      15000 // ⏱ HARD 15s LIMIT
+      15000
     );
 
     const roast = completion?.choices?.[0]?.message?.content;
@@ -64,7 +75,7 @@ app.post("/roast", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+const PORT = Number(process.env.PORT) || 3001;
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🔥 Roast server running on port ${PORT}`);
 });
