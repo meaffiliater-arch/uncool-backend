@@ -1,8 +1,8 @@
 {
-  "name": "uncool-roast-server",
+  "name": "uncool-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "roast.js",
+  "private": true,
   "scripts": {
     "start": "node roast.js"
   },
